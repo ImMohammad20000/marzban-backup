@@ -44,9 +44,7 @@ session = AiohttpSession()
 if PROXY_URL:
     session.proxy = PROXY_URL
 
-BOT = Bot(TOKEN, parse_mode=ParseMode.MARKDOWN,
-          #   session=session
-          )
+BOT = Bot(TOKEN, parse_mode=ParseMode.MARKDOWN, session=session)
 
 dp = Dispatcher()
 
