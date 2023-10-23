@@ -81,7 +81,7 @@ bot support multiple panel if you have another panel you can use this json
 
 then save the changes
 
-now run this command for start bor
+now run this command for start bot
 
 
 ```bash
