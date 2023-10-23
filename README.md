@@ -96,4 +96,4 @@ if you want to edit `.env` or `server_list.json` after you save changes **you ha
 
 ## Update
 
-to update the project just clone the repositories again.
+to update the project just clone the repository again.
