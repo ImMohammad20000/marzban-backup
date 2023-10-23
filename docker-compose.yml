@@ -1,0 +1,8 @@
+version: "3.3"
+services:
+  marzban-backup:
+    build: .
+    container_name: marzban-backup-bot
+    env_file: .env
+    network_mode: host
+    restart: always
