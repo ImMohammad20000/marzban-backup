@@ -1,0 +1,12 @@
+{
+    "servers":[
+        {
+            "host": "host",
+            "port": 22,
+            "user": "user",
+            "pass": "pass",
+            "var_files": "/var/lib/marzban/",
+            "opt_files": "/opt/marzban/"
+        }
+    ]
+}
