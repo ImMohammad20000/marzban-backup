@@ -92,7 +92,7 @@ to test the bot is working use `/db` command
 
 ## Modify .env or json files
 
-if you want to edit `.env` or `server_list.json` after you save changes **you havw to** use `docker compose down` and `docker compose up --build -d` for re-build docker contaner
+if you want to edit `.env` or `server_list.json` after you save changes **you have to** use `docker compose down` and `docker compose up --build -d` for re-build docker contaner
 
 ## Update
 
