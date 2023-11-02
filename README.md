@@ -88,7 +88,7 @@ now run this command for start bot
 docker compose up -d
 ```
 
-to test the bot is working use `/db` command
+to test bot use `/backup` command
 
 ## Modify .env or json files
 

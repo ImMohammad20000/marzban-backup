@@ -57,7 +57,7 @@ async def command_start_handler(message: types.Message) -> None:
     await message.answer(f"Hello, {bold(message.from_user.full_name)}!")
 
 
-@dp.message(Command(commands="db"))
+@dp.message(Command(commands="backup"))
 async def send_full_backup_command(message: types.Message):
     if message.from_user.id == CHAT_ID:
         await send_full_backups()
