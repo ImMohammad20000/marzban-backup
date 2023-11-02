@@ -1,12 +1,15 @@
 {
-    "servers":[
-        {
-            "host": "host",
-            "port": 22,
-            "user": "user",
-            "pass": "pass",
-            "var_files": "/var/lib/marzban/",
-            "opt_files": "/opt/marzban/"
-        }
-    ]
+  "servers": [
+    {
+      "host": "host",
+      "port": 22,
+      "user": "user",
+      "pass": "pass",
+      "is_mysql_DB": false,
+      "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
+      "mysql_db_directory": "mysql",
+      "var_files": "/var/lib/marzban/",
+      "opt_files": "/opt/marzban/"
+    }
+  ]
 }

@@ -41,41 +41,52 @@ nano server_list.json
 
 ```json
 {
-    "servers":[
-        {
-            "host": "host",
-            "port": 22,
-            "user": "user",
-            "pass": "pass",
-            "var_files": "/var/lib/marzban/",
-            "opt_files": "/opt/marzban/"
-        }
-    ]
+  "servers": [
+    {
+      "host": "host",
+      "port": 22,
+      "user": "user",
+      "pass": "pass",
+      "is_mysql_DB": false,
+      "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
+      "mysql_db_directory": "mysql",
+      "var_files": "/var/lib/marzban/",
+      "opt_files": "/opt/marzban/"
+    }
+  ]
 }
 ```
+
+if you use **mysql** database for your pannel set `"is_mysql_DB"` flag `true`
 
 bot support multiple panel if you have another panel you can use this json
 
 ```json
 {
-    "servers":[
-        {
-            "host": "host",
-            "port": 22,
-            "user": "user",
-            "pass": "pass",
-            "var_files": "/var/lib/marzban/",
-            "opt_files": "/opt/marzban/"
-        },
-        {
-            "host": "host2",
-            "port": 22,
-            "user": "user2",
-            "pass": "pass2",
-            "var_files": "/var/lib/marzban/",
-            "opt_files": "/opt/marzban/"
-        }
-    ]
+  "servers": [
+    {
+      "host": "host",
+      "port": 22,
+      "user": "user",
+      "pass": "pass",
+      "is_mysql_DB": false,
+      "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
+      "mysql_db_directory": "mysql",
+      "var_files": "/var/lib/marzban/",
+      "opt_files": "/opt/marzban/"
+    },
+    {
+      "host": "host2",
+      "port": 22,
+      "user": "user2",
+      "pass": "pass2",
+      "is_mysql_DB": true,
+      "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
+      "mysql_db_directory": "mysql",
+      "var_files": "/var/lib/marzban/",
+      "opt_files": "/opt/marzban/"
+    }
+  ]
 }
 ```
 

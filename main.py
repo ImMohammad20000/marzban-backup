@@ -92,7 +92,7 @@ def _create_zipFile(ssh, scp_client_obj, zip_file_obj, remote_path, files):
     return zip_file_obj
 
 
-def create_zipFile(hostname, port, username, password, var_files, opt_files):
+def create_zipFile(hostname, port, username, password, var_files, opt_files, is_mysql_DB, mysql_db_directory, mysql_db_path):
     try:
         ssh = createSSHClient(hostname, port, username, password)
         with (
@@ -101,8 +101,18 @@ def create_zipFile(hostname, port, username, password, var_files, opt_files):
         ):
             remote_var_files = get_list_dir(ssh, var_files)
             remote_opt_files = get_list_dir(ssh, opt_files)
-            zf = _create_zipFile(ssh, scp, zf, var_files, remote_var_files)
-            zf = _create_zipFile(ssh, scp, zf, opt_files, remote_opt_files)
+
+            if mysql_db_directory in remote_var_files:
+                remote_var_files.remove(mysql_db_directory)
+
+            zf = _create_zipFile(ssh, scp, zf, var_files,
+                                 remote_var_files)
+            zf = _create_zipFile(ssh, scp, zf, opt_files,
+                                 remote_opt_files)
+            if is_mysql_DB:
+                remote_db_files = get_list_dir(ssh, mysql_db_path)
+                zf = _create_zipFile(
+                    ssh, scp, zf, mysql_db_path, remote_db_files)
     except Exception as e:
         logging.info(e)
         return
@@ -122,10 +132,13 @@ async def send_full_backups():
         port = i["port"]
         username = i['user']
         password = i['pass']
+        is_mysql_DB: bool = i['is_mysql_DB']
+        mysql_db_directory = i['mysql_db_directory']
+        mysql_db_path = i['mysql_db_path']
         var_files = i['var_files']
         opt_files = i['opt_files']
         bac = create_zipFile(hostname, port, username,
-                             password, var_files, opt_files)
+                             password, var_files, opt_files, is_mysql_DB, mysql_db_directory, mysql_db_path)
         if not bac:
             continue
         date = get_date()
