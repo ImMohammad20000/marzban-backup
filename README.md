@@ -61,7 +61,7 @@ nano server_list.json
 
 if you use **mysql** database for your pannel set `"is_mysql_DB"` flag `true`
 
-if you don't want some folders or files in backup use `exclude` list
+if you don't want get backup of some folders or files use `exclude` list
 
 bot support multiple panel if you have another panel you can use this json
 
