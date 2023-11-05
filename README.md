@@ -49,7 +49,9 @@ nano server_list.json
       "pass": "pass",
       "is_mysql_DB": false,
       "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
-      "mysql_db_directory": "mysql",
+      "exclude": [
+        "mysql"
+      ],
       "var_files": "/var/lib/marzban/",
       "opt_files": "/opt/marzban/"
     }
@@ -58,6 +60,8 @@ nano server_list.json
 ```
 
 if you use **mysql** database for your pannel set `"is_mysql_DB"` flag `true`
+
+if you don't want some folders or files in backup use `exclude` list
 
 bot support multiple panel if you have another panel you can use this json
 
@@ -71,7 +75,9 @@ bot support multiple panel if you have another panel you can use this json
       "pass": "pass",
       "is_mysql_DB": false,
       "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
-      "mysql_db_directory": "mysql",
+      "exclude": [
+        "mysql"
+      ],
       "var_files": "/var/lib/marzban/",
       "opt_files": "/opt/marzban/"
     },
@@ -82,7 +88,9 @@ bot support multiple panel if you have another panel you can use this json
       "pass": "pass2",
       "is_mysql_DB": true,
       "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
-      "mysql_db_directory": "mysql",
+      "exclude": [
+        "mysql"
+      ],
       "var_files": "/var/lib/marzban/",
       "opt_files": "/opt/marzban/"
     }

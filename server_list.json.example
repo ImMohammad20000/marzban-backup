@@ -7,7 +7,9 @@
       "pass": "pass",
       "is_mysql_DB": false,
       "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
-      "mysql_db_directory": "mysql",
+      "exclude": [
+        "mysql"
+      ],
       "var_files": "/var/lib/marzban/",
       "opt_files": "/opt/marzban/"
     }

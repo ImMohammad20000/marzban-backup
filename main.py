@@ -79,12 +79,18 @@ def get_date():
     return datetime.now(pytz.timezone(TZ)).strftime('%Y/%m/%d %H:%M:%S')
 
 
-def _create_zipFile(ssh, scp_client_obj, zip_file_obj, remote_path, files):
+def _create_zipFile(ssh, scp_client_obj, zip_file_obj, remote_path, files, exclude):
+
+    exclude_files_and_dirctories(exclude, files)
+
     for f in files:
         if is_dir(ssh, f"{remote_path}{f}"):
             _files = get_list_dir(ssh, f"{remote_path}{f}")
             zip_file_obj = _create_zipFile(
-                ssh, scp_client_obj, zip_file_obj, f"{remote_path}{f}/", _files)
+                ssh, scp_client_obj,
+                zip_file_obj, f"{remote_path}{f}/",
+                _files, exclude
+            )
             continue
         scp_client_obj.get(f"{remote_path}{f}", f"{BACKUP_PATH}{f}")
         zip_file_obj.write(f"{BACKUP_PATH}{f}", f"{remote_path[1:]}{f}")
@@ -92,7 +98,13 @@ def _create_zipFile(ssh, scp_client_obj, zip_file_obj, remote_path, files):
     return zip_file_obj
 
 
-def create_zipFile(hostname, port, username, password, var_files, opt_files, is_mysql_DB, mysql_db_directory, mysql_db_path):
+def exclude_files_and_dirctories(exclude: list, _list: list):
+    for e in exclude:
+        if e in _list:
+            _list.remove(e)
+
+
+def create_zipFile(hostname, port, username, password, var_files, opt_files, is_mysql_DB, exclude, mysql_db_path):
     try:
         ssh = createSSHClient(hostname, port, username, password)
         with (
@@ -101,18 +113,28 @@ def create_zipFile(hostname, port, username, password, var_files, opt_files, is_
         ):
             remote_var_files = get_list_dir(ssh, var_files)
             remote_opt_files = get_list_dir(ssh, opt_files)
+            exclude_files_and_dirctories(exclude, remote_var_files)
+            exclude_files_and_dirctories(exclude, remote_opt_files)
 
-            if mysql_db_directory in remote_var_files:
-                remote_var_files.remove(mysql_db_directory)
-
-            zf = _create_zipFile(ssh, scp, zf, var_files,
-                                 remote_var_files)
-            zf = _create_zipFile(ssh, scp, zf, opt_files,
-                                 remote_opt_files)
+            zf = _create_zipFile(
+                ssh, scp,
+                zf, var_files,
+                remote_var_files, exclude
+            )
+            zf = _create_zipFile(
+                ssh, scp,
+                zf, opt_files,
+                remote_opt_files, exclude
+            )
             if is_mysql_DB:
                 remote_db_files = get_list_dir(ssh, mysql_db_path)
+                exclude_files_and_dirctories(exclude, remote_db_files)
+
                 zf = _create_zipFile(
-                    ssh, scp, zf, mysql_db_path, remote_db_files)
+                    ssh, scp,
+                    zf, mysql_db_path,
+                    remote_db_files, exclude
+                )
     except Exception as e:
         logging.info(e)
         return
@@ -132,13 +154,15 @@ async def send_full_backups():
         port = i["port"]
         username = i['user']
         password = i['pass']
-        is_mysql_DB: bool = i['is_mysql_DB']
-        mysql_db_directory = i['mysql_db_directory']
+        is_mysql_DB = i['is_mysql_DB']
+        exclude = i['exclude']
         mysql_db_path = i['mysql_db_path']
         var_files = i['var_files']
         opt_files = i['opt_files']
-        bac = create_zipFile(hostname, port, username,
-                             password, var_files, opt_files, is_mysql_DB, mysql_db_directory, mysql_db_path)
+        bac = create_zipFile(hostname, port,
+                             username, password, var_files,
+                             opt_files, is_mysql_DB, exclude, mysql_db_path,
+                             )
         if not bac:
             continue
         date = get_date()
