@@ -5,8 +5,11 @@
       "port": 22,
       "user": "user",
       "pass": "pass",
-      "is_mysql_DB": false,
-      "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
+      "is_mysql_DB": false, 
+      "mysql_user": "root",
+      "mysql_password": "password",
+      "database_name": "marzban",
+      "mysql_contaner_name": "marzban-mysql-1",
       "exclude": [
         "mysql"
       ],

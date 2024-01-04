@@ -104,13 +104,27 @@ def exclude_files_and_dirctories(exclude: list, _list: list):
             _list.remove(e)
 
 
-def create_zipFile(hostname, port, username, password, var_files, opt_files, is_mysql_DB, exclude, mysql_db_path):
+def mysql_backup(ssh: paramiko.SSHClient, mysql_user: str, mysql_password: str, mysql_contaner_name: str, database_name: str, path: str):
+    stdin, stdout, stderr = ssh.exec_command(
+        f'docker exec {mysql_contaner_name} mysqldump -u {mysql_user} --password={mysql_password}  {database_name} > "{path}/{database_name}.sql"'
+    )
+    # stdin, stdout, stderr = ssh.exec_command(
+    #     f'mysqldump -u {mysql_user} --password={mysql_password}  {database_name} > "{path}/{database_name}.sql"'
+    # )
+    if stderr:
+        logging.error(stderr.read().decode().strip())
+
+
+def create_zipFile(hostname, port, username, password, var_files, opt_files, is_mysql_DB, exclude, mysql_user: str, mysql_password: str, mysql_contaner_name: str, database_name: str):
     try:
         ssh = createSSHClient(hostname, port, username, password)
         with (
             SCPClient(ssh.get_transport()) as scp,
             zipfile.ZipFile(BACKUP_FILE_NAME, "w", zipfile.ZIP_DEFLATED) as zf
         ):
+            if is_mysql_DB:
+                mysql_backup(ssh, mysql_user, mysql_password,
+                             mysql_contaner_name, database_name, var_files)
             remote_var_files = get_list_dir(ssh, var_files)
             remote_opt_files = get_list_dir(ssh, opt_files)
             exclude_files_and_dirctories(exclude, remote_var_files)
@@ -126,15 +140,7 @@ def create_zipFile(hostname, port, username, password, var_files, opt_files, is_
                 zf, opt_files,
                 remote_opt_files, exclude
             )
-            if is_mysql_DB:
-                remote_db_files = get_list_dir(ssh, mysql_db_path)
-                exclude_files_and_dirctories(exclude, remote_db_files)
 
-                zf = _create_zipFile(
-                    ssh, scp,
-                    zf, mysql_db_path,
-                    remote_db_files, exclude
-                )
     except Exception as e:
         logging.info(e)
         return
@@ -156,13 +162,15 @@ async def send_full_backups():
         password = i['pass']
         is_mysql_DB = i['is_mysql_DB']
         exclude = i['exclude']
-        mysql_db_path = i['mysql_db_path']
+        mysql_user = i['mysql_user']
+        mysql_password = i['mysql_password']
+        database_name = i['database_name']
+        mysql_contaner_name = i['mysql_contaner_name']
         var_files = i['var_files']
         opt_files = i['opt_files']
         bac = create_zipFile(hostname, port,
                              username, password, var_files,
-                             opt_files, is_mysql_DB, exclude, mysql_db_path,
-                             )
+                             opt_files, is_mysql_DB, exclude, mysql_user, mysql_password, mysql_contaner_name, database_name)
         if not bac:
             continue
         date = get_date()

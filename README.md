@@ -47,8 +47,11 @@ nano server_list.json
       "port": 22,
       "user": "user",
       "pass": "pass",
-      "is_mysql_DB": false,
-      "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
+      "is_mysql_DB": false, 
+      "mysql_user": "root",
+      "mysql_password": "password",
+      "database_name": "marzban",
+      "mysql_contaner_name": "marzban-mysql-1",
       "exclude": [
         "mysql"
       ],
@@ -73,8 +76,11 @@ bot support multiple panel if you have another panel you can use this json
       "port": 22,
       "user": "user",
       "pass": "pass",
-      "is_mysql_DB": false,
-      "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
+      "is_mysql_DB": false, 
+      "mysql_user": "root",
+      "mysql_password": "password",
+      "database_name": "marzban",
+      "mysql_contaner_name": "marzban-mysql-1",
       "exclude": [
         "mysql"
       ],
@@ -86,8 +92,11 @@ bot support multiple panel if you have another panel you can use this json
       "port": 22,
       "user": "user2",
       "pass": "pass2",
-      "is_mysql_DB": true,
-      "mysql_db_path": "/var/lib/marzban/mysql/marzban/",
+      "is_mysql_DB": true, 
+      "mysql_user": "root",
+      "mysql_password": "password",
+      "database_name": "marzban",
+      "mysql_contaner_name": "marzban-mysql-1",
       "exclude": [
         "mysql"
       ],
