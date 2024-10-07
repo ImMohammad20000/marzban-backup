@@ -143,7 +143,10 @@ def create_zipFile(hostname, port, username, password, var_files, opt_files, is_
 
     except Exception as e:
         logging.info(e)
+        if hasattr(ssh, "close"):
+            ssh.close()
         return
+    ssh.close()
     return BACKUP_FILE_NAME
 
 
