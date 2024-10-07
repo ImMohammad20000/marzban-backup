@@ -116,6 +116,7 @@ def mysql_backup(ssh: paramiko.SSHClient, mysql_user: str, mysql_password: str, 
 
 
 def create_zipFile(hostname, port, username, password, var_files, opt_files, is_mysql_DB, exclude, mysql_user: str, mysql_password: str, mysql_contaner_name: str, database_name: str):
+    ssh = None
     try:
         ssh = createSSHClient(hostname, port, username, password)
         with (
