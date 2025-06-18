@@ -104,18 +104,24 @@ def exclude_files_and_dirctories(exclude: list, _list: list):
             _list.remove(e)
 
 
-def mysql_backup(ssh: paramiko.SSHClient, mysql_user: str, mysql_password: str, mysql_contaner_name: str, database_name: str, path: str):
-    stdin, stdout, stderr = ssh.exec_command(
-        f'docker exec {mysql_contaner_name} mysqldump -u {mysql_user} --password={mysql_password}  {database_name} > "{path}/{database_name}.sql"'
+def db_backup(ssh: paramiko.SSHClient, db_type: str, db_user: str, db_password: str,
+              db_container_name: str, database_name: str, path: str):
+    if db_type not in ("mysql", "mariadb"):
+        return
+
+    dump_binary = "mysqldump" if db_type == "mysql" else "mariadb-dump"
+    cmd = (
+        f'docker exec {db_container_name} {dump_binary} -u {db_user} '
+        f'--password={db_password} {database_name} > "{path}/{database_name}.sql"'
     )
-    # stdin, stdout, stderr = ssh.exec_command(
-    #     f'mysqldump -u {mysql_user} --password={mysql_password}  {database_name} > "{path}/{database_name}.sql"'
-    # )
+    stdin, stdout, stderr = ssh.exec_command(cmd)
     if stderr:
         logging.error(stderr.read().decode().strip())
 
 
-def create_zipFile(hostname, port, username, password, var_files, opt_files, is_mysql_DB, exclude, mysql_user: str, mysql_password: str, mysql_contaner_name: str, database_name: str):
+def create_zipFile(hostname, port, username, password, var_files, opt_files,
+                   db_type, exclude, db_user: str, db_password: str,
+                   db_container_name: str, database_name: str):
     ssh = None
     try:
         ssh = createSSHClient(hostname, port, username, password)
@@ -123,9 +129,9 @@ def create_zipFile(hostname, port, username, password, var_files, opt_files, is_
             SCPClient(ssh.get_transport()) as scp,
             zipfile.ZipFile(BACKUP_FILE_NAME, "w", zipfile.ZIP_DEFLATED) as zf
         ):
-            if is_mysql_DB:
-                mysql_backup(ssh, mysql_user, mysql_password,
-                             mysql_contaner_name, database_name, var_files)
+            if db_type in ("mysql", "mariadb"):
+                db_backup(ssh, db_type, db_user, db_password,
+                          db_container_name, database_name, var_files)
             remote_var_files = get_list_dir(ssh, var_files)
             remote_opt_files = get_list_dir(ssh, opt_files)
             exclude_files_and_dirctories(exclude, remote_var_files)
@@ -162,19 +168,32 @@ async def send_full_backups():
     for i in SERVER_LIST["servers"]:
         hostname = i["host"]
         port = i["port"]
-        username = i['user']
-        password = i['pass']
-        is_mysql_DB = i['is_mysql_DB']
-        exclude = i['exclude']
-        mysql_user = i['mysql_user']
-        mysql_password = i['mysql_password']
-        database_name = i['database_name']
-        mysql_contaner_name = i['mysql_contaner_name']
-        var_files = i['var_files']
-        opt_files = i['opt_files']
-        bac = create_zipFile(hostname, port,
-                             username, password, var_files,
-                             opt_files, is_mysql_DB, exclude, mysql_user, mysql_password, mysql_contaner_name, database_name)
+        username = i["user"]
+        password = i["pass"]
+        db_type = i.get("db_type")
+        if not db_type and i.get("is_mysql_DB"):
+            db_type = "mysql"
+        exclude = i["exclude"]
+        db_user = i.get("db_user", i.get("mysql_user"))
+        db_password = i.get("db_password", i.get("mysql_password"))
+        database_name = i["database_name"]
+        db_container_name = i.get("db_contaner_name", i.get("mysql_contaner_name"))
+        var_files = i["var_files"]
+        opt_files = i["opt_files"]
+        bac = create_zipFile(
+            hostname,
+            port,
+            username,
+            password,
+            var_files,
+            opt_files,
+            db_type,
+            exclude,
+            db_user,
+            db_password,
+            db_container_name,
+            database_name,
+        )
         if not bac:
             continue
         date = get_date()

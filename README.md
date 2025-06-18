@@ -47,11 +47,11 @@ nano server_list.json
       "port": 22,
       "user": "user",
       "pass": "pass",
-      "is_mysql_DB": false, 
-      "mysql_user": "root",
-      "mysql_password": "password",
+      "db_type": "mysql",
+      "db_user": "root",
+      "db_password": "password",
       "database_name": "marzban",
-      "mysql_contaner_name": "marzban-mysql-1",
+      "db_contaner_name": "marzban-mysql-1",
       "exclude": [
         "mysql"
       ],
@@ -62,7 +62,7 @@ nano server_list.json
 }
 ```
 
-if you use **mysql** database for your pannel set `"is_mysql_DB"` flag `true`
+set `db_type` to `mysql` or `mariadb` to enable database backup
 
 if you don't want get backup of some folders or files use `exclude` list
 
@@ -76,11 +76,11 @@ bot support multiple panel if you have another panel you can use this json
       "port": 22,
       "user": "user",
       "pass": "pass",
-      "is_mysql_DB": false, 
-      "mysql_user": "root",
-      "mysql_password": "password",
+      "db_type": "mariadb",
+      "db_user": "root",
+      "db_password": "password",
       "database_name": "marzban",
-      "mysql_contaner_name": "marzban-mysql-1",
+      "db_contaner_name": "marzban-mysql-1",
       "exclude": [
         "mysql"
       ],
@@ -92,11 +92,11 @@ bot support multiple panel if you have another panel you can use this json
       "port": 22,
       "user": "user2",
       "pass": "pass2",
-      "is_mysql_DB": true, 
-      "mysql_user": "root",
-      "mysql_password": "password",
+      "db_type": "mysql",
+      "db_user": "root",
+      "db_password": "password",
       "database_name": "marzban",
-      "mysql_contaner_name": "marzban-mysql-1",
+      "db_contaner_name": "marzban-mysql-1",
       "exclude": [
         "mysql"
       ],
