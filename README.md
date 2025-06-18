@@ -125,3 +125,13 @@ if you want to edit `.env` or `server_list.json` after you save changes **you ha
 ## Update
 
 to update the project just clone the repository again.
+
+## Large backups
+
+If the generated backup file is larger than **50&nbsp;MB**, the bot will
+automatically split it into 50&nbsp;MB parts and send each part separately.
+
+To restore the original `marzban-backup.zip` from the parts use one of the following methods:
+- **Linux**: run `cat marzban-backup.zip.part* > marzban-backup.zip` inside the folder that contains the parts.
+- **Windows**: in a command prompt run `copy /b marzban-backup.zip.part1+marzban-backup.zip.part2+... marzban-backup.zip` or use a tool like 7-Zip to combine them.
+
