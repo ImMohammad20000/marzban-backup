@@ -35,6 +35,12 @@ BACKUP_PATH = "./backups/"
 
 BACKUP_FILE_NAME = "marzban-backup.zip"
 
+# Path to store parts of large backups
+PARTS_PATH = "./parts/"
+
+# Maximum Telegram file size for bots (50 MB)
+MAX_PART_SIZE = 50 * 1024 * 1024
+
 
 with open("./server_list.json", "r") as jf:
     SERVER_LIST = json.loads(jf.read())
@@ -50,6 +56,9 @@ dp = Dispatcher()
 
 if not path.exists(BACKUP_PATH):
     mkdir(BACKUP_PATH)
+
+if not path.exists(PARTS_PATH):
+    mkdir(PARTS_PATH)
 
 
 @dp.message(CommandStart())
@@ -164,6 +173,27 @@ def createSSHClient(server, port, user, password):
     return client
 
 
+def split_file(file_path: str, max_size: int = MAX_PART_SIZE) -> List[str]:
+    """Split file into parts not exceeding ``max_size`` bytes."""
+
+    parts = []
+    part_num = 1
+    with open(file_path, "rb") as f:
+        while True:
+            chunk = f.read(max_size)
+            if not chunk:
+                break
+            part_name = path.join(
+                PARTS_PATH, f"{path.basename(file_path)}.part{part_num}"
+            )
+            with open(part_name, "wb") as pf:
+                pf.write(chunk)
+            parts.append(part_name)
+            part_num += 1
+
+    return parts
+
+
 async def send_full_backups():
     for i in SERVER_LIST["servers"]:
         hostname = i["host"]
@@ -197,8 +227,26 @@ async def send_full_backups():
         if not bac:
             continue
         date = get_date()
-        await BOT.send_document(chat_id=CHAT_ID, document=types.FSInputFile(path=bac, filename=bac), caption=f'🕐 Date : {date}\n\n🔰 IP : `{hostname}`')
-        remove(bac)
+        if path.getsize(bac) > MAX_PART_SIZE:
+            parts = split_file(bac, MAX_PART_SIZE)
+            remove(bac)
+            for idx, part in enumerate(parts, start=1):
+                await BOT.send_document(
+                    chat_id=CHAT_ID,
+                    document=types.FSInputFile(path=part, filename=path.basename(part)),
+                    caption=(
+                        f'🕐 Date : {date}\n\n🔰 IP : `{hostname}`\n'
+                        f'Part {idx}/{len(parts)}'
+                    ),
+                )
+                remove(part)
+        else:
+            await BOT.send_document(
+                chat_id=CHAT_ID,
+                document=types.FSInputFile(path=bac, filename=bac),
+                caption=f'🕐 Date : {date}\n\n🔰 IP : `{hostname}`'
+            )
+            remove(bac)
 
 
 async def main() -> None:
